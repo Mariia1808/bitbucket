@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const $host = axios.create({
-    baseURL: 'http://localhost:5000/api'
+    baseURL: 'https://vast-tundra-19403.herokuapp.com/api'
 })
 export {
     $host,
