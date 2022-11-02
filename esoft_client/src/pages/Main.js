@@ -49,7 +49,6 @@ const Main = () => {
   }, [page]);
 
   const filterFromTo = (value, what) => {
-    console.log(what);
     if (
       what === "fromPrice" ||
       "fromArea" ||
@@ -70,9 +69,7 @@ const Main = () => {
     let array = [];
     const to = 100000000000;
     const from = 0;
-    console.log(filters);
     flats?.map((item) => {
-        console.log(parseInt(item.price))
       if (
         parseInt(item.price) <= parseInt(filters["toPrice"] || to) &&
         parseInt(filters["fromPrice"] || from) <= parseInt(item.price) &&

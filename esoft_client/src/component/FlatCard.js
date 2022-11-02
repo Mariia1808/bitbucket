@@ -11,7 +11,6 @@ const FlatCard = ({ data=[], flatOne=false }) => {
       </div>
 
       <div className="flat_card_text">
-        {data.id}
         <p>Цена: {data.price}</p>
         <p>Количество комнат: {data.rooms}</p>
         <p>Общая площадь: {data.area_total}</p>
