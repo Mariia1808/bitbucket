@@ -1,4 +1,3 @@
-import axios from "axios";
 import { $host } from ".";
 
 export const getID = async (id) => {
@@ -6,7 +5,8 @@ export const getID = async (id) => {
     return data
 }
 
-export const getAll = async () => {
-    const {data} = await $host.get('/flat')
+export const getAll = async (filter, limit, page) => {
+    const {data} = await $host.post('/flat', {filter, limit, page})
+    console.log(data)
     return data
 }

@@ -1,43 +1,66 @@
-.img{
-    width: 300px;
+.img {
+  width: 300px;
 }
-.image{
-    width: 400px;
+.image {
+  width: 400px;
 }
-.flat_card{
-    display: flex;
-    align-items: center;
-    align-content: center;
-    border: 1px solid black;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: auto;
-    margin-top: 30px;
-    max-width: 1000px;
-    padding: 10px;
-    justify-content: center;
-    
+.flat_card {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  border: 1px solid black;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: auto;
+  margin-top: 30px;
+  max-width: 1000px;
+  padding: 10px;
+  justify-content: center;
 }
-.point{
-    cursor: pointer;
+.point {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  border: 1px solid black;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: auto;
+  margin-top: 30px;
+  max-width: 1000px;
+  padding: 10px;
+  justify-content: center;
 }
-.flat_card_text{
-    margin: 0 auto 0 0;
-    font-size: 16pt;
+.flat_card_text {
+  margin: 0 auto 0 0;
+  font-size: 16pt;
 }
-.flat_card_img{
-    margin:auto;
+.flat_card_img {
+  margin: auto;
 }
-.filter{
-    display: flex;
-    align-items: center;
-    align-content: center;
-    border: 1px solid black;
-    flex-direction: column;
-    flex-wrap: wrap;
-    margin: auto;
-    margin-top: 30px;
-    max-width: 1000px;
-    padding: 10px;
-    justify-content: center;
+.filter {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  border: 1px solid black;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: auto;
+  margin-top: 30px;
+  max-width: 1000px;
+  padding: 10px;
+  justify-content: center;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  max-width: 80%;
+  margin: auto;
+}
+.flats_cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }

@@ -3,7 +3,7 @@ const FlatController = require('../controllers/flatController')
 const router = new Router()
 
 
-router.get('/', FlatController.getAll)
+router.post('/', FlatController.getAll)
 router.get('/:id', FlatController.getOne)
 
 module.exports = router

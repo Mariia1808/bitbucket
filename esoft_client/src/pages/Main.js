@@ -1,16 +1,17 @@
 import "../css.css";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAll } from "../http/API_flat";
 import FlatCard from "../component/FlatCard";
 import Pagination from "@mui/material/Pagination";
 import Switch from "@mui/material/Switch";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Main = () => {
   const [flats, setFlats] = useState(undefined);
-  const [flatsPage, setFlatsPage] = useState(undefined);
-  const [flatsFilter, setFlatsFilter] = useState([]);
-  const [count, setCount] = useState(3);
-  const [notFound, setNotFound] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [count, setCount] = useState(1);
+  const [error, setError] = useState("");
+  const [nameFilter, setNameFilter] = useState("")
   const [filters, setFilters] = useState({
     fromPrice: "",
     fromArea: "",
@@ -23,16 +24,10 @@ const Main = () => {
     toAreaKitchen: "",
     toPrice: "",
     toFloor: "",
+    orderBy: "",
+    sort: "ASC",
   });
   const [dop, setDop] = useState(false);
-
-  useEffect(() => {
-    getAll().then((data) => {
-      setFlats(data);
-      setFlatsFilter(data);
-      setNotFound('')
-    });
-  }, []);
 
   const [page, setPage] = useState(1);
   const handleChange = (event, value) => {
@@ -40,129 +35,68 @@ const Main = () => {
   };
 
   useEffect(() => {
-    setCount(Math.ceil(flatsFilter?.length / 8));
-    setFlatsPage(flatsFilter?.slice(0, 8));
-  }, [flatsFilter]);
-
-  useEffect(() => {
-    setFlatsPage(flatsFilter?.slice((page - 1) * 8, page * 8));
-  }, [page]);
+    setFlats([]);
+    setError("");
+    setLoading(true);
+    getAll({ ...filters }, 8, page)
+      .then((data) => {
+        if (data.message) {
+          setError(data.message);
+        } else {
+          setFlats(data.rows);
+          setCount(Math.ceil(data.count / 8));
+        }
+      })
+      .finally(setLoading(false));
+  }, [page, filters]);
 
   const filterFromTo = (value, what) => {
-    if (
-      what === "fromPrice" ||
-      "fromArea" ||
-      "fromAreaKitchen" ||
-      "fromFloor" ||
-      "room"
-    ) {
-      setFilters((prevState) => ({ ...prevState, [what]: value || 0 }));
-    } else {
-      setFilters((prevState) => ({
-        ...prevState,
-        [what]: value || 10000000000,
-      }));
-    }
-  };
-
-  useEffect(() => {
-    let array = [];
-    const to = 100000000000;
-    const from = 0;
-    flats?.map((item) => {
-      if (
-        parseInt(item.price) <= parseInt(filters["toPrice"] || to) &&
-        parseInt(filters["fromPrice"] || from) <= parseInt(item.price) &&
-        parseFloat(item.area_total) <= parseFloat(filters["toArea"] || to) &&
-        parseFloat(item.area_total) >=
-          parseFloat(filters["fromArea"] || from) &&
-        parseInt(item.floor) <= parseInt(filters["toFloor"] || to) &&
-        parseInt(filters["fromFloor"] || from) <= parseInt(item.floor) &&
-        parseFloat(item.area_kitchen) <=
-          parseFloat(filters["toAreaKitchen"] || to) &&
-        parseFloat(item.area_kitchen) >=
-          parseFloat(filters["fromAreaKitchen"] || from) &&
-        parseFloat(item.area_live) <= parseFloat(filters["toAreaLive"] || to) &&
-        parseFloat(item.area_live) >=
-          parseFloat(filters["fromAreaLive"] || from)
-      ) {
-        array.push(item);
-      }
-    });
-    array = filters["room"]
-      ? (array || flats).filter((item) => item.rooms === filters["room"])
-      : array;
-    setFlatsFilter(array);
-    setNotFound(array.length ? null : "Ничего не найдено");
-  }, [filters]);
-
-  const refresh = () => {
-    setCount(Math.ceil(flatsFilter?.length / 8));
-    setFlatsPage(flatsFilter?.slice(0, 8));
-  };
-
-  const UpPrice = () => {
-    setFlatsFilter(
-      flatsFilter.sort((a, b) => {
-        {
-          return a.price - b.price;
-        }
-      })
-    );
-    refresh();
-  };
-  const DownPrice = () => {
-    setFlatsFilter(
-      flatsFilter.sort((a, b) => {
-        {
-          return b.price - a.price;
-        }
-      })
-    );
-    refresh();
-  };
-  const UpArea = () => {
-    setFlatsFilter(
-      flatsFilter.sort((a, b) => {
-        {
-          return parseFloat(a.area_total) - parseFloat(b.area_total);
-        }
-      })
-    );
-    refresh();
-  };
-  const DownArea = () => {
-    setFlatsFilter(
-      flatsFilter.sort((a, b) => {
-        {
-          return parseFloat(b.area_total) - parseFloat(a.area_total);
-        }
-      })
-    );
-    refresh();
+    setFilters((prevState) => ({ ...prevState, [what]: value }));
   };
 
   const restart = () => {
-    setFlatsFilter(flats);
+    setNameFilter('')
     setFilters({
       fromPrice: "",
       fromArea: "",
       fromAreaKitchen: "",
       fromFloor: "",
       fromAreaLive: "",
-      room: "",
+      fromRoom: "",
+      toRoom: "",
       toArea: "",
       toAreaLive: "",
       toAreaKitchen: "",
       toPrice: "",
       toFloor: "",
+      orderBy: "",
+      sort: "",
     });
-    setDop(false);
-    refresh();
+  };
+
+  const UpPrice = () => {
+    filterFromTo("price", "orderBy");
+    filterFromTo("ASC", "sort");
+    setNameFilter("По возрастанию цены")
+  };
+  const DownPrice = () => {
+    filterFromTo("price", "orderBy");
+    filterFromTo("DESC", "sort");
+    setNameFilter("По убыванию цены")
+  };
+  const UpArea = () => {
+    filterFromTo("area_total", "orderBy");
+    filterFromTo("ASC", "sort");
+    setNameFilter("По возрастанию площади")
+  };
+  const DownArea = () => {
+    filterFromTo("area_total", "orderBy");
+    filterFromTo("DESC", "sort");
+    setNameFilter("По убыванию площади")
   };
 
   return (
-    <>
+    <div className="main">
       <div className="filter">
         <div>
           <button onClick={() => UpPrice()}>По возрастанию цены</button>
@@ -171,11 +105,22 @@ const Main = () => {
           <button onClick={() => DownArea()}>По убыванию площади</button>
         </div>
         <div>
-          Комнаты
+          Кол-во комнат
           <div>
-            <button onClick={() => filterFromTo(1, "room")}>1</button>
-            <button onClick={() => filterFromTo(2, "room")}>2</button>
-            <button onClick={() => filterFromTo(3, "room")}>3</button>
+            <input
+              type="number"
+              min={0}
+              placeholder="от"
+              value={filters["fromRoom"]}
+              onChange={(e) => filterFromTo(e.target.value, "fromRoom")}
+            />
+            <input
+              type="number"
+              min={0}
+              placeholder="до"
+              value={filters["toRoom"]}
+              onChange={(e) => filterFromTo(e.target.value, "toRoom")}
+            />
           </div>
         </div>
         <div>
@@ -279,23 +224,18 @@ const Main = () => {
             </div>
           )}
         </div>
-        <button onClick={() => restart()}>Сбросить</button>
+        <button onClick={() => restart()}>Сбросить все</button>
       </div>
-      {notFound ? (
-        <div className="flat_card">{notFound}</div>
-      ) : (
-        <>
-          {flatsPage?.map((data) => (
-            <FlatCard key={data.id} data={data} />
-          ))}
-          <Pagination
-            count={count ? count : 0}
-            page={page}
-            onChange={handleChange}
-          />
-        </>
-      )}
-    </>
+      {nameFilter && <div className="flat_card">{nameFilter}</div>}
+      {error && <div className="flat_card">{error}</div>}
+      {loading && <div className="flat_card"><CircularProgress /></div>}
+      <div className="flats_cards">
+        {flats?.map((data) => (
+          <FlatCard key={data.id} data={data} />
+        ))}
+      </div>
+      <Pagination count={count} page={page} onChange={handleChange} />
+    </div>
   );
 };
 

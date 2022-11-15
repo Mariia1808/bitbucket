@@ -1,13 +1,13 @@
 import "../css.css";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const FlatCard = ({ data=[], flatOne=false }) => {
   const toNavigate = useNavigate();
   return (
-    <div className={flatOne? "flat_card" : "flat_card point"} onClick={() => toNavigate("/flat/" + data.id)}>
+    <div className={flatOne? "flat_card" : "point"} onClick={() => toNavigate("/flat/" + data.id)}>
       <div className="flat_card_img">
-        <img src={data.layout_image} className={flatOne? "image" : "img"} />
+        <img alt="Планировка" src={data.layout_image} className={flatOne? "image" : "img"} />
       </div>
 
       <div className="flat_card_text">
